@@ -1,122 +1,166 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Heart Rate Measurement</title>
   <style>
+    :root {
+      --primary: #0077b6;
+      --accent: #d90429;
+      --background: #f4faff;
+      --text: #1e1e1e;
+      --light-gray: #e0e0e0;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      font-size: 16;
-      background-color: #e8f7facb;
       margin: 0;
       padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
     }
+
     nav {
-      background-color: #0077b6;
-      padding: 12px;
+      background-color: var(--primary);
+      padding: 14px 0;
       text-align: center;
     }
+
     nav a {
       color: white;
-      text-decoration: none;
-      font-weight: bold;
       font-size: 18px;
+      text-decoration: none;
+      font-weight: 500;
     }
+
     h2 {
       text-align: center;
-      margin-top: 20px;
+      margin: 40px 20px 10px;
+      font-size: 20px;
+      line-height: 1.6;
     }
-    #video-container {
-      position: relative;
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    
+
+    /* New flex container for example image + video */
+    .flex-example-video {
       display: flex;
       justify-content: center;
-      margin-top: 20px;
+      align-items: center;
+      margin-top: 30px;
+      gap: 24px;
     }
-    #video {
-      width: 450px;
-      height: 200px;
+
+    .flex-example-video img {
+      width: 120px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: block;
+    }
+
+    .flex-example-video h3 {
+      font-size: 14px;
+      margin-bottom: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    /* Video styles */
+    video#video {
+      width: 480px;
+      height: 240px;
+      border-radius: 12px;
       transform: scaleX(-1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: block;
     }
+
     #overlay-box {
-  position: absolute;
-  border: 3px dashed red;
-  top: 100px;
-  left: 50%;
-  width: 80px;
-  height: 80px;
-  pointer-events: none;
-  transform: translateX(-50%);
-}
+      position: absolute;
+      border: 2px dashed var(--accent);
+      top: 80px;
+      left: 50%;
+      width: 80px;
+      height: 80px;
+      transform: translateX(-50%);
+      pointer-events: none;
+      border-radius: 8px;
+    }
 
     #start-btn {
-  display: block;
-  margin: 30px auto;
-  padding: 10px 20px;
-  font-size: 18px;
-  background-color: crimson;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.2s, transform 0.1s;
-}
+      display: block;
+      margin: 30px auto;
+      padding: 12px 28px;
+      font-size: 16px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
 
-#start-btn:active {
-  background-color: #a3001a;
-  transform: scale(0.95);
-}
+    #start-btn:active {
+      background-color: #a6001e;
+    }
 
     #bpmResult {
       text-align: center;
-      font-size: 20px;
+      font-size: 18px;
       margin-top: 10px;
     }
-   footer {
-  background-color: #0077b6;
-  color: white;
-  text-align: center;
-  padding: 20px ;
-  margin-top: 40px;
-  position: relative;
-  bottom: 0;
-  width: 100%;
-  font-size: 16px;
-}
-    #example{
-      text-align: right;
-      width: 40%;
-    max-width: 400px;
-    border-radius: 1rem;
+
+    footer {
+      background-color: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 16px 0;
+      margin-top: 60px;
+      font-size: 14px;
     }
-    
+
   </style>
 </head>
 <body>
+
   <nav>
     <a href="/">Home</a>
-    
   </nav>
 
-  <h2>
-    Place the <strong>tip</strong> of your index finger inside the red box shown below<br>
-    and click <strong>Start Measurement</strong>.<br>
-    Hold it there tightly for exactly 7 seconds.
-  </h2>
-  <div id="example">
-  <h2>Example: 
-<img src="{{ url_for('static', filename='images/example.png') }}" alt="Heart Monitor">
-</h2>
-  </div>
-</body>
-  <div id="video-container">
-    <video id="video" autoplay></video>
-    <div id="overlay-box"></div>
+  <div class="container">
+    <h2>
+      Place the <strong>tip</strong> of your index finger inside the red box below<br />
+      and click <strong>Start Measurement</strong>. Hold it there for exactly 7 seconds.
+    </h2>
+
+    <div class="flex-example-video">
+      <div>
+        <h3>Example</h3>
+        <img src="{{ url_for('static', filename='images/example.png') }}" alt="Example finger placement" />
+      </div>
+
+      <div style="position: relative;">
+        <video id="video" autoplay muted></video>
+        <div id="overlay-box"></div>
+      </div>
+    </div>
+
+    <button id="start-btn" onclick="measureBPM()">Start Measurement</button>
+    <p id="bpmResult"></p>
   </div>
 
-  <button id="start-btn" onclick="measureBPM()">Start Measurement</button>
-  <p id="bpmResult"></p>
-  
+  <footer>
+    &copy; 2025 HeartMonitor.
+  </footer>
+
   <script>
-    src="{{ url_for('static', filename='script.js') }}"
     let videoStream;
 
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
@@ -125,90 +169,80 @@
       videoStream = stream;
     });
 
-   function measureBPM() {
-  const duration = 7; // seconds
-  const fps = 30;
-  const interval = 1000 / fps;
-  const total_frames = duration * fps;
-  const intensity_values = [];
+    function measureBPM() {
+      const duration = 7;
+      const fps = 30;
+      const interval = 1000 / fps;
+      const total_frames = duration * fps;
+      const intensity_values = [];
 
-  const video = document.getElementById("video");
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+      const video = document.getElementById("video");
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
-  let frames = 0;
-  const statusText = document.getElementById("bpmResult");
-  const startBtn = document.getElementById("start-btn");
+      let frames = 0;
+      const statusText = document.getElementById("bpmResult");
+      const startBtn = document.getElementById("start-btn");
 
-  // Disable the button during measurement
-  startBtn.disabled = true;
-  startBtn.style.cursor = "not-allowed";
+      startBtn.disabled = true;
+      startBtn.style.cursor = "not-allowed";
+      statusText.innerText = "Wait for 7 seconds...";
 
-  statusText.innerText = "Wait for 7 seconds...";
-
-  const intervalId = setInterval(() => {
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = ctx.getImageData(220, 100, 200, 200);
-    const data = imageData.data;
-    let redSum = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      redSum += data[i];
-    }
-    intensity_values.push(redSum / (data.length / 4));
-    frames++;
-
-    // Update status messages at different time marks
-    const secondsPassed = frames / fps;
-    if (secondsPassed > 3 && secondsPassed <= 5) {
-      statusText.innerText = "A little more, hold steady...";
-    } else if (secondsPassed > 5 && secondsPassed < 7) {
-      statusText.innerText = "Adjust lighting if needed...";
-    }
-
-    if (frames >= total_frames) {
-      clearInterval(intervalId);
-
-      if (videoStream) {
-        videoStream.getTracks().forEach(track => track.stop());
-      }
-
-      statusText.innerText = "Processing...";
-
-      fetch("/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ intensity_values, duration })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.bpm) {
-          statusText.innerText = `Your heart rate is approximately ${data.bpm} BPM.`;
-        } else if (data.redirect) {
-          window.location.href = data.redirect;
-        } else {
-          statusText.innerText = "Sorry, could not measure heart rate.";
+      const intervalId = setInterval(() => {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(220, 100, 200, 200);
+        const data = imageData.data;
+        let redSum = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          redSum += data[i];
         }
-        startBtn.disabled = false;
-        startBtn.style.cursor = "pointer";
-      })
-      .catch(() => {
-        statusText.innerText = "Error processing measurement.";
-        startBtn.disabled = false;
-        startBtn.style.cursor = "pointer";
-      });
+        intensity_values.push(redSum / (data.length / 4));
+        frames++;
+
+        const secondsPassed = frames / fps;
+        if (secondsPassed > 3 && secondsPassed <= 5) {
+          statusText.innerText = "A little more, hold steady...";
+        } else if (secondsPassed > 5 && secondsPassed < 7) {
+          statusText.innerText = "Adjust lighting if needed...";
+        }
+
+        if (frames >= total_frames) {
+          clearInterval(intervalId);
+          if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+          }
+
+          statusText.innerText = "Processing...";
+
+          fetch("/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ intensity_values, duration })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.bpm) {
+                statusText.innerText = `Your heart rate is approximately ${data.bpm} BPM.`;
+              } else if (data.redirect) {
+                window.location.href = data.redirect;
+              } else {
+                statusText.innerText = "Sorry, could not measure heart rate.";
+              }
+              startBtn.disabled = false;
+              startBtn.style.cursor = "pointer";
+            })
+            .catch(() => {
+              statusText.innerText = "Error processing measurement.";
+              startBtn.disabled = false;
+              startBtn.style.cursor = "pointer";
+            });
+        }
+      }, interval);
     }
-  }, interval);
-}
-
   </script>
-
- 
-   <footer>
-  
-</footer>
 
 </body>
 </html>
