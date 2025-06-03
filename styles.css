@@ -1,0 +1,109 @@
+:root {
+  --bg-light: #e8f7fa; /* light medical blue */
+  --bg-dark: #1e1e1e;
+  --text-light: #222;  /* darker text for readability */
+  --text-dark: #eee;
+  --primary: #0077b6;  /* deep blue */
+  --secondary: #00b4d8; /* bright cyan */
+  --accent: #90e0ef; /* lighter accent blue */
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  transition: background 0.3s, color 0.3s;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body.dark-mode {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+.navbar {
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+.navbar a:hover {
+  color: var(--accent);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 2rem;
+  background: var(--bg-light);
+  color: var(--text-light);
+  flex-grow: 1;
+}
+
+.hero-text {
+  max-width: 50%;
+}
+
+.hero-img {
+  width: 40%;
+  max-width: 400px;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px var(--secondary);
+}
+
+.buttons .btn {
+  padding: 0.8rem 1.5rem;
+  margin-right: 1rem;
+  text-decoration: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn.primary {
+  background-color: var(--primary);
+}
+
+.btn.secondary {
+  background-color: var(--secondary);
+}
+
+.theory {
+  padding: 2rem;
+  background: var(--bg-light);
+  color: var(--text-light);
+  max-width: 800px;
+  margin: 2rem auto;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.15);
+}
+
+footer {
+  text-align: center;
+  padding: 2px;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+}
