@@ -1,4 +1,5 @@
-flask
+Flask
+gunicorn==21.2.0
 opencv-python-headless
 numpy
 scipy
