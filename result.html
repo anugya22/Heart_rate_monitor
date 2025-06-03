@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PulseSense - Measurement Result</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      min-height: 100vh;
+    }
+    nav {
+      background-color: #0077b6;
+      padding: 12px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+      margin: 0 10px;
+    }
+    .container {
+      max-width: 700px;
+      margin: 30px auto 80px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #ccc;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 5px;
+    }
+    #bpm {
+      font-size: 40px;
+      color: crimson;
+      margin-bottom: 20px;
+    }
+    canvas {
+      max-width: 100%;
+      height: 300px;
+    }
+    p.note {
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+    }
+    /* Bottom-left theory link */
+    .theory-link {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      background: #111;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+    .theory-link:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a> | <a href="/measure">Measure Again</a>
+    
+  </nav>
+
+  <div class="container">
+    <h1>Heart Rate Measurement Result</h1>
+    <p id="bpm">Heart Rate: {{ bpm }} BPM</p>
+
+    <canvas id="intensityChart"></canvas>
+    <p class="note">Graph showing smoothed red intensity over time (peaks marked).</p>
+  </div>
+
+  <a href="/theory" class="theory-link" title="Learn how PulseSense works!">
+    Want to know how it works? 📖
+  </a>
+
+  <script>
+
+  const smoothedData = JSON.parse('{{ smoothed | tojson | safe }}');
+  const peaksData = JSON.parse('{{ peaks | tojson | safe }}');
+
+
+
+  const peakPoints = peaksData.map(idx => ({ x: idx, y: smoothedData[idx] }));
+
+  const ctx = document.getElementById('intensityChart').getContext('2d');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: smoothedData.map((_, i) => i),
+      datasets: [
+        {
+          label: 'Smoothed Red Intensity',
+          data: smoothedData,
+          borderColor: 'crimson',
+          fill: false,
+          tension: 0.3,
+        },
+        {
+          label: 'Peaks',
+          data: peakPoints,
+          type: 'scatter',
+          backgroundColor: 'blue',
+          pointRadius: 6,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true, position: 'top' },
+        tooltip: { mode: 'index', intersect: false },
+      },
+      scales: {
+        x: { title: { display: true, text: 'Frame Number' } },
+        y: { title: { display: true, text: 'Intensity' } },
+      },
+    }
+  });
+</script>
+
+
+</body>
+</html>
