@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>How It Works – PulseSense</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="navbar">
+    <h1 class="logo">❤️ PulseSense</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('measure') }}">Measure</a>
+      <a href="{{ url_for('theory') }}">How It Works</a>
+      <button id="themeToggle">🌓</button>
+    </nav>
+  </header>
+
+  <div class="theory content-box">
+    <h1>📖 How Does PulseSense Detect Heart Rate?</h1>
+
+    <p><strong>PulseSense</strong> uses your device's webcam to measure your heart rate — completely contactless, sensor-free, and smart!</p>
+
+    <h2> The Science Behind It</h2>
+    <p>
+      Every time your heart beats, it pumps blood throughout your body. When you place your fingertip over your webcam, the system can visually detect subtle changes in the <strong>red color intensity</strong> on your skin. This is due to the blood volume pulsing with each beat.
+    </p>
+
+    <p>
+      These changes are almost invisible to the human eye, but a webcam can capture them as <strong>fluctuations in pixel intensity</strong>—especially in the red channel of RGB (Red-Green-Blue) color data. More blood = more red; less blood = slightly less red.
+    </p>
+    <img src="{{ url_for('static', filename='static/theory_img.png') }}"  alt="finger img">
+
+    <h2>From Light to Heartbeats</h2>
+    <ul>
+      <li>We record a short video (10–20 seconds) of your finger covering the camera.</li>
+      <li>We extract each frame's red channel average to get a time-series signal.</li>
+      <li>This signal will look like a repeating wave — <strong>each peak = one heartbeat</strong>.</li>
+      <li>We detect these peaks and count how many occur in one minute (or extrapolate from 15s).</li>
+      <li>Finally, we calculate your <strong>BPM (beats per minute)</strong> using:  
+        <code>BPM = (Number of Peaks / Time in seconds) × 60</code>
+      </li>
+    </ul>
+
+    <h2> Accuracy Tips</h2>
+    <ul>
+      <li>Use a well-lit environment — too dark or too bright light reduces accuracy.</li>
+      <li>Place your <strong>index finger</strong> flat over the webcam lens and hold it steadily.</li>
+      <li>Keep your hand still during the recording — motion causes false peaks.</li>
+      <li>Prefer using external webcams over built-in ones for better light sensitivity.</li>
+    </ul>
+
+    <h2> Inspired by Real Tech</h2>
+    <p>
+      Our method is based on <strong>photoplethysmography (PPG)</strong>, the same principle used in pulse oximeters and smartwatches. It’s a non-invasive way to measure blood volume changes using light.
+    </p>
+
+    <p>Your webcam + smart code = real heart rate</p>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 PulseDetect. Built with ❤️ using Python and OpenCV.</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
