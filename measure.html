@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Heart Rate Measurement</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e8f7facb;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background-color: #0077b6;
+      padding: 12px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 20px;
+    }
+    #video-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    #video {
+      width: 490px;
+      height: 270px;
+      transform: scaleX(-1);
+    }
+    #overlay-box {
+  position: absolute;
+  border: 3px dashed red;
+  top: 100px;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+    #start-btn {
+  display: block;
+  margin: 30px auto;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: crimson;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+#start-btn:active {
+  background-color: #a3001a;
+  transform: scale(0.95);
+}
+
+    #bpmResult {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 10px;
+    }
+   footer {
+  background-color: #0077b6;
+  color: white;
+  text-align: center;
+  padding: 20px ;
+  margin-top: 40px;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  font-size: 16px;
+}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    
+  </nav>
+
+  <h2>
+    Place your index finger inside the red box shown below<br>
+    and click <strong>Start Measurement</strong>.<br>
+    Hold it there tightly for exactly 7 seconds.
+  </h2>
+
+  <div id="video-container">
+    <video id="video" autoplay></video>
+    <div id="overlay-box"></div>
+  </div>
+
+  <button id="start-btn" onclick="measureBPM()">Start Measurement</button>
+  <p id="bpmResult"></p>
+  
+  <script>
+    src="{{ url_for('static', filename='script.js') }}"
+    let videoStream;
+
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+      const video = document.getElementById("video");
+      video.srcObject = stream;
+      videoStream = stream;
+    });
+
+   function measureBPM() {
+  const duration = 7; // seconds
+  const fps = 30;
+  const interval = 1000 / fps;
+  const total_frames = duration * fps;
+  const intensity_values = [];
+
+  const video = document.getElementById("video");
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  let frames = 0;
+  const statusText = document.getElementById("bpmResult");
+  const startBtn = document.getElementById("start-btn");
+
+  // Disable the button during measurement
+  startBtn.disabled = true;
+  startBtn.style.cursor = "not-allowed";
+
+  statusText.innerText = "Wait for 7 seconds...";
+
+  const intervalId = setInterval(() => {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = ctx.getImageData(220, 100, 200, 200);
+    const data = imageData.data;
+    let redSum = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      redSum += data[i];
+    }
+    intensity_values.push(redSum / (data.length / 4));
+    frames++;
+
+    // Update status messages at different time marks
+    const secondsPassed = frames / fps;
+    if (secondsPassed > 3 && secondsPassed <= 5) {
+      statusText.innerText = "A little more, hold steady...";
+    } else if (secondsPassed > 5 && secondsPassed < 7) {
+      statusText.innerText = "Adjust lighting if needed...";
+    }
+
+    if (frames >= total_frames) {
+      clearInterval(intervalId);
+
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+      }
+
+      statusText.innerText = "Processing...";
+
+      fetch("/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ intensity_values, duration })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.bpm) {
+          statusText.innerText = `Your heart rate is approximately ${data.bpm} BPM.`;
+        } else if (data.redirect) {
+          window.location.href = data.redirect;
+        } else {
+          statusText.innerText = "Sorry, could not measure heart rate.";
+        }
+        startBtn.disabled = false;
+        startBtn.style.cursor = "pointer";
+      })
+      .catch(() => {
+        statusText.innerText = "Error processing measurement.";
+        startBtn.disabled = false;
+        startBtn.style.cursor = "pointer";
+      });
+    }
+  }, interval);
+}
+
+  </script>
+
+ 
+   <footer>
+  
+</footer>
+
+</body>
+</html>
