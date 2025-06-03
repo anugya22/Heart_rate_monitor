@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PulseSense</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="navbar">
+    <h1 class="logo">❤️ PulseSense</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('measure') }}">Measure</a>
+      <a href="{{ url_for('theory') }}">How It Works</a>
+      <button id="themeToggle">🌓</button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h2>Check Your Heart Rate in Seconds</h2>
+      <p>Measure your pulse using just your camera. Get started instantly.</p>
+      <div class="buttons">
+        <a href="{{ url_for('measure') }}" class="btn primary">Start Measuring</a>
+        <a href="{{ url_for('theory') }}" class="btn secondary">How it Works</a>
+      </div>
+    </div>
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQww21CH0W3F3xLGjJTo3xRGwIiSoUWmBTYmw&s" class="hero-img" alt="Heart Image">
+  </section>
+ 
+
+  <footer>
+    <p>&copy; 2025 PulseDetect. Built with 💖</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
