@@ -81,6 +81,13 @@
   width: 100%;
   font-size: 16px;
 }
+    #example{
+      text-align: right;
+      width: 40%;
+    max-width: 400px;
+    border-radius: 1rem;
+    }
+    
   </style>
 </head>
 <body>
@@ -90,11 +97,16 @@
   </nav>
 
   <h2>
-    Place your index finger inside the red box shown below<br>
+    Place the <strong>tip</strong> of your index finger inside the red box shown below<br>
     and click <strong>Start Measurement</strong>.<br>
     Hold it there tightly for exactly 7 seconds.
   </h2>
-
+  <div id="example">
+  <h2>Example: 
+<img src="{{ url_for('static', filename='images/example.png') }}" alt="Heart Monitor">
+</h2>
+  </div>
+</body>
   <div id="video-container">
     <video id="video" autoplay></video>
     <div id="overlay-box"></div>
