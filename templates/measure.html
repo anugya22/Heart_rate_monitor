@@ -256,6 +256,29 @@
   Designed by <strong>Anugya</strong><br>
   © 2025 | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
 </footer>
+  <script>
+  const isPrivacyPage = window.location.pathname === "/privacy";
+
+  // Show popup if consent not accepted and not on privacy page
+  if (!localStorage.getItem("privacyAccepted") && !isPrivacyPage) {
+    const popup = document.createElement("div");
+    popup.id = "consent-popup";
+    popup.style = "position:fixed; bottom:0; left:0; right:0; background:#f9f9f9; border-top:1px solid #ccc; padding:15px; text-align:center; z-index:9999; box-shadow:0 -2px 6px rgba(0,0,0,0.1); font-size:15px;";
+    popup.innerHTML = `
+      This site uses cookies and displays ads from Google. See our <a href="/privacy" target="_blank">Privacy Policy</a>.
+      <button id="accept-consent" style="margin-left:15px; padding:6px 12px; font-weight:bold; background:#4caf50; color:white; border:none; border-radius:4px;">Accept</button>
+    `;
+    document.body.appendChild(popup);
+
+    document.getElementById("accept-consent").onclick = function () {
+      localStorage.setItem("privacyAccepted", true);
+      document.getElementById("consent-popup").remove();
+    };
+  }
+
+ 
+</script>
+
 
 </body>
 </html>
