@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, session, url_for
+from flask import Flask, render_template, jsonify, request, session, url_for, send_from_directory
 import numpy as np
 from scipy.signal import find_peaks
 import os
@@ -27,34 +27,35 @@ def instructions():
 def privacy():
     return render_template("privacy.html")
 
+# Route for ads.txt
+@app.route('/ads.txt')
+def ads():
+    return send_from_directory(directory='static', path='ads.txt', mimetype='text/plain')
+
 # BPM detection route
 @app.route("/start", methods=["POST"])
 def start_detection():
     data = request.get_json()
     intensity_values = data.get("intensity_values", [])
-    sampling_time = data.get("duration", 10)  # updated to 10 seconds
+    sampling_time = data.get("duration", 10)
 
     if not intensity_values or len(intensity_values) < 10:
         return jsonify({"error": "No or insufficient intensity data received"}), 400
 
-    # Check for flat signal — no pulse detected if very low variation
     if max(intensity_values) - min(intensity_values) < 15:
         session["bpm"] = "Unreliable"
         session["smoothed"] = []
         session["peaks"] = []
         return jsonify({"redirect": url_for("result")})
 
-    # Smooth the intensity signal
     smoothed = np.convolve(intensity_values, np.ones(5) / 5, mode='valid')
     fps = len(intensity_values) / sampling_time
 
     try:
-        # Detect peaks with minimum distance and height threshold
         peaks, _ = find_peaks(smoothed, distance=fps / 3, height=np.mean(smoothed) * 0.9)
     except Exception:
         peaks = []
 
-    # Estimate BPM
     if len(peaks) < 2:
         bpm = "Unreliable"
     else:
