@@ -114,6 +114,17 @@
     <h1>Heart Rate Measurement Result</h1>
     <p id="bpm">Heart Rate: {{ bpm }} BPM</p>
 
+    <!-- Google AdSense Result Page Ad -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-7378987771428327"
+         data-ad-slot="1950939511"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
     <canvas id="intensityChart"></canvas>
     <p class="note">Graph showing smoothed red intensity over time (peaks marked).</p>
 
@@ -166,37 +177,33 @@
       }
     });
   </script>
-   <!-- Footer -->
-<footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
- 
-  Designed by <strong>Anugya</strong><br>
-  © 2025 | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
 
-
+  <!-- Footer -->
+  <footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
+    Designed by <strong>Anugya</strong><br>
+    © 2025 | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
   </footer>
+
   <script>
-  const isPrivacyPage = window.location.pathname === "/privacy";
+    const isPrivacyPage = window.location.pathname === "/privacy";
 
-  // Show popup if consent not accepted and not on privacy page
-  if (!localStorage.getItem("privacyAccepted") && !isPrivacyPage) {
-    const popup = document.createElement("div");
-    popup.id = "consent-popup";
-    popup.style = "position:fixed; bottom:0; left:0; right:0; background:#f9f9f9; border-top:1px solid #ccc; padding:15px; text-align:center; z-index:9999; box-shadow:0 -2px 6px rgba(0,0,0,0.1); font-size:15px;";
-    popup.innerHTML = `
-      This site uses cookies and displays ads from Google. See our <a href="/privacy" target="_blank">Privacy Policy</a>.
-      <button id="accept-consent" style="margin-left:15px; padding:6px 12px; font-weight:bold; background:#4caf50; color:white; border:none; border-radius:4px;">Accept</button>
-    `;
-    document.body.appendChild(popup);
+    // Show popup if consent not accepted and not on privacy page
+    if (!localStorage.getItem("privacyAccepted") && !isPrivacyPage) {
+      const popup = document.createElement("div");
+      popup.id = "consent-popup";
+      popup.style = "position:fixed; bottom:0; left:0; right:0; background:#f9f9f9; border-top:1px solid #ccc; padding:15px; text-align:center; z-index:9999; box-shadow:0 -2px 6px rgba(0,0,0,0.1); font-size:15px;";
+      popup.innerHTML = `
+        This site uses cookies and displays ads from Google. See our <a href="/privacy" target="_blank">Privacy Policy</a>.
+        <button id="accept-consent" style="margin-left:15px; padding:6px 12px; font-weight:bold; background:#4caf50; color:white; border:none; border-radius:4px;">Accept</button>
+      `;
+      document.body.appendChild(popup);
 
-    document.getElementById("accept-consent").onclick = function () {
-      localStorage.setItem("privacyAccepted", true);
-      document.getElementById("consent-popup").remove();
-    };
-  }
-
- 
-</script>
-
+      document.getElementById("accept-consent").onclick = function () {
+        localStorage.setItem("privacyAccepted", true);
+        document.getElementById("consent-popup").remove();
+      };
+    }
+  </script>
 
 </body>
 </html>
