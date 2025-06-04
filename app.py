@@ -6,6 +6,7 @@ import os
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
+# Routes for each page
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -21,12 +22,12 @@ def theory():
 @app.route("/instructions")
 def instructions():
     return render_template("instructions.html")
-    
-    @app.route("/privacy")
+
+@app.route("/privacy")  # ✅ Fixed indentation
 def privacy():
     return render_template("privacy.html")
 
-
+# BPM detection route
 @app.route("/start", methods=["POST"])
 def start_detection():
     data = request.get_json()
@@ -49,7 +50,7 @@ def start_detection():
 
     try:
         # Detect peaks with minimum distance and height threshold
-        peaks, _ = find_peaks(smoothed, distance=fps/3, height=np.mean(smoothed) * 0.9)
+        peaks, _ = find_peaks(smoothed, distance=fps / 3, height=np.mean(smoothed) * 0.9)
     except Exception:
         peaks = []
 
