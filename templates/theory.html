@@ -6,7 +6,8 @@
   <meta charset="UTF-8" />
   <title>How It Works – PulseSense</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <style> :root {
+  <style> 
+    :root {
       --primary: #ff4d6d;
       --secondary: #f9f9f9;
       --accent: #4ecca3;
@@ -26,10 +27,7 @@
       color: var(--dark);
       line-height: 1.6;
     }
-
-</style>
-  
-
+  </style>
 </head>
 <body>
   <header class="navbar">
@@ -84,15 +82,25 @@
     <p>Your webcam + smart code = real heart rate</p>
   </div>
 
+  <!-- Google AdSense Ad Slot inserted here -->
+  <div style="margin: 30px auto; max-width: 728px; text-align:center;">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-7378987771428327"
+         data-ad-slot="1950939511"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
   
-     
-<footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
-  <p>&copy; 2025 PulseDetect. Built using Python and OpenCV.</p>
-  Designed by <strong>Anugya</strong><br>
-   | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
-
-
+  <footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
+    <p>&copy; 2025 PulseDetect. Built using Python and OpenCV.</p>
+    Designed by <strong>Anugya</strong><br>
+     | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
   </footer>
+
   <script>
   const isPrivacyPage = window.location.pathname === "/privacy";
 
@@ -112,10 +120,7 @@
       document.getElementById("consent-popup").remove();
     };
   }
-
- 
-</script>
-
+  </script>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
