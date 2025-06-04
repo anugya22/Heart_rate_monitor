@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Heart Rate Measurement</title>
   <style>
-   :root {
+    :root {
       --primary: #b6d7a8;
       --secondary: #f9f9f9;
       --accent: red;
@@ -26,7 +26,6 @@
       line-height: 1.6;
     }
 
-    /* Container for top‐left and top‐right links */
     .top-links {
       display: flex;
       justify-content: space-between;
@@ -36,7 +35,6 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
-    /* Style for “← Home” and “📋 Instructions” links */
     .back-link {
       font-size: 16px;
       color: #1e1e1e;
@@ -44,6 +42,7 @@
       font-weight: 600;
       transition: color 0.2s ease;
     }
+
     .back-link:hover {
       color: #333;
       text-decoration: underline;
@@ -60,10 +59,8 @@
       max-width: 800px;
       margin: 0 auto;
       padding: 0 20px;
-      background-color:linear-gradient(to right, #ffe0e6, #fefefe); ;
     }
 
-    /* Flex container for example image + video */
     .flex-example-video {
       display: flex;
       justify-content: center;
@@ -75,7 +72,7 @@
     .flex-example-video img {
       width: 120px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       display: block;
     }
 
@@ -86,7 +83,6 @@
       font-weight: 500;
     }
 
-    /* Video styles */
     #video {
       width: 480px;
       height: 240px;
@@ -94,6 +90,7 @@
       transform: scaleX(-1);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       display: block;
+      background: #000;
     }
 
     #overlay-box {
@@ -120,6 +117,7 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
+
     #start-btn:active {
       background-color: #a6001e;
     }
@@ -131,15 +129,12 @@
     }
 
     footer {
-      
       margin-top: auto;
-      
     }
   </style>
 </head>
 <body>
 
-  <!-- Top‐bar containing “← Home” (left) and “📋 Instructions” (right) -->
   <div class="top-links">
     <a href="{{ url_for('index') }}" class="back-link">← Home</a>
     <a href="{{ url_for('instructions') }}" class="back-link">📋 Instructions</a>
@@ -167,17 +162,13 @@
     <p id="bpmResult"></p>
   </div>
 
- 
+  <footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
+    Designed by <strong>Anugya</strong><br>
+    © 2025 | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
+  </footer>
 
   <script>
-    let videoStream;
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      const video = document.getElementById("video");
-      video.srcObject = stream;
-      videoStream = stream;
-    });
-
-    function measureBPM() {
+    async function measureBPM() {
       const duration = 7;
       const fps = 30;
       const interval = 1000 / fps;
@@ -188,97 +179,95 @@
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      let frames = 0;
       const statusText = document.getElementById("bpmResult");
       const startBtn = document.getElementById("start-btn");
-
       startBtn.disabled = true;
       startBtn.style.cursor = "not-allowed";
-      statusText.innerText = "Wait for 7 seconds...";
 
-      const intervalId = setInterval(() => {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(220, 100, 200, 200);
-        const data = imageData.data;
-        let redSum = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          redSum += data[i];
-        }
-        intensity_values.push(redSum / (data.length / 4));
-        frames++;
+      // Access webcam only after button click
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        await new Promise(resolve => video.onloadedmetadata = resolve);
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-        const secondsPassed = frames / fps;
-        if (secondsPassed > 3 && secondsPassed <= 5) {
-          statusText.innerText = "A little more, hold steady...";
-        } else if (secondsPassed > 5 && secondsPassed < 7) {
-          statusText.innerText = "Adjust lighting if needed...";
-        }
+        statusText.innerText = "Wait for 7 seconds...";
+        let frames = 0;
 
-        if (frames >= total_frames) {
-          clearInterval(intervalId);
-          if (videoStream) {
-            videoStream.getTracks().forEach(track => track.stop());
+        const intervalId = setInterval(() => {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(220, 100, 200, 200);
+          const data = imageData.data;
+          let redSum = 0;
+          for (let i = 0; i < data.length; i += 4) {
+            redSum += data[i];
+          }
+          intensity_values.push(redSum / (data.length / 4));
+          frames++;
+
+          const secondsPassed = frames / fps;
+          if (secondsPassed > 3 && secondsPassed <= 5) {
+            statusText.innerText = "A little more, hold steady...";
+          } else if (secondsPassed > 5 && secondsPassed < 7) {
+            statusText.innerText = "Adjust lighting if needed...";
           }
 
-          statusText.innerText = "Processing...";
+          if (frames >= total_frames) {
+            clearInterval(intervalId);
+            stream.getTracks().forEach(track => track.stop());
+            statusText.innerText = "Processing...";
 
-          fetch("/start", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ intensity_values, duration })
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.bpm) {
-              statusText.innerText = `Your heart rate is approximately ${data.bpm} BPM.`;
-            } else if (data.redirect) {
-              window.location.href = data.redirect;
-            } else {
-              statusText.innerText = "Sorry, could not measure heart rate.";
-            }
-            startBtn.disabled = false;
-            startBtn.style.cursor = "pointer";
-          })
-          .catch(() => {
-            statusText.innerText = "Error processing measurement.";
-            startBtn.disabled = false;
-            startBtn.style.cursor = "pointer";
-          });
-        }
-      }, interval);
+            fetch("/start", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ intensity_values, duration })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.bpm) {
+                statusText.innerText = `Your heart rate is approximately ${data.bpm} BPM.`;
+              } else if (data.redirect) {
+                window.location.href = data.redirect;
+              } else {
+                statusText.innerText = "Sorry, could not measure heart rate.";
+              }
+              startBtn.disabled = false;
+              startBtn.style.cursor = "pointer";
+            })
+            .catch(() => {
+              statusText.innerText = "Error processing measurement.";
+              startBtn.disabled = false;
+              startBtn.style.cursor = "pointer";
+            });
+          }
+        }, interval);
+      } catch (error) {
+        statusText.innerText = "Could not access camera.";
+        startBtn.disabled = false;
+        startBtn.style.cursor = "pointer";
+      }
     }
   </script>
-  <!-- Footer -->
-<footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
-  Designed by <strong>Anugya</strong><br>
-  © 2025 | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
-</footer>
+
   <script>
-  const isPrivacyPage = window.location.pathname === "/privacy";
+    const isPrivacyPage = window.location.pathname === "/privacy";
+    if (!localStorage.getItem("privacyAccepted") && !isPrivacyPage) {
+      const popup = document.createElement("div");
+      popup.id = "consent-popup";
+      popup.style = "position:fixed; bottom:0; left:0; right:0; background:#f9f9f9; border-top:1px solid #ccc; padding:15px; text-align:center; z-index:9999; box-shadow:0 -2px 6px rgba(0,0,0,0.1); font-size:15px;";
+      popup.innerHTML = `
+        This site uses cookies and displays ads from Google. See our <a href="/privacy" target="_blank">Privacy Policy</a>.
+        <button id="accept-consent" style="margin-left:15px; padding:6px 12px; font-weight:bold; background:#4caf50; color:white; border:none; border-radius:4px;">Accept</button>
+      `;
+      document.body.appendChild(popup);
 
-  // Show popup if consent not accepted and not on privacy page
-  if (!localStorage.getItem("privacyAccepted") && !isPrivacyPage) {
-    const popup = document.createElement("div");
-    popup.id = "consent-popup";
-    popup.style = "position:fixed; bottom:0; left:0; right:0; background:#f9f9f9; border-top:1px solid #ccc; padding:15px; text-align:center; z-index:9999; box-shadow:0 -2px 6px rgba(0,0,0,0.1); font-size:15px;";
-    popup.innerHTML = `
-      This site uses cookies and displays ads from Google. See our <a href="/privacy" target="_blank">Privacy Policy</a>.
-      <button id="accept-consent" style="margin-left:15px; padding:6px 12px; font-weight:bold; background:#4caf50; color:white; border:none; border-radius:4px;">Accept</button>
-    `;
-    document.body.appendChild(popup);
-
-    document.getElementById("accept-consent").onclick = function () {
-      localStorage.setItem("privacyAccepted", true);
-      document.getElementById("consent-popup").remove();
-    };
-  }
-
- 
-</script>
-
+      document.getElementById("accept-consent").onclick = function () {
+        localStorage.setItem("privacyAccepted", true);
+        document.getElementById("consent-popup").remove();
+      };
+    }
+  </script>
 
 </body>
 </html>
