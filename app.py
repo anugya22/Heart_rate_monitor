@@ -23,7 +23,7 @@ def theory():
 def instructions():
     return render_template("instructions.html")
 
-@app.route("/privacy")  # ✅ Fixed indentation
+@app.route("/privacy")
 def privacy():
     return render_template("privacy.html")
 
@@ -32,7 +32,7 @@ def privacy():
 def start_detection():
     data = request.get_json()
     intensity_values = data.get("intensity_values", [])
-    sampling_time = data.get("duration", 7)
+    sampling_time = data.get("duration", 10)  # updated to 10 seconds
 
     if not intensity_values or len(intensity_values) < 10:
         return jsonify({"error": "No or insufficient intensity data received"}), 400
