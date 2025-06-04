@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>PulseSense</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <style>
     :root {
@@ -102,6 +104,7 @@
       display: flex;
       gap: 16px;
       flex-wrap: wrap;
+      margin-bottom: 20px; /* add some spacing below buttons */
     }
 
     .btn {
@@ -166,6 +169,7 @@
     }
   </style>
 
+  <!-- Google AdSense Library Script: only one per page -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7378987771428327"
     crossorigin="anonymous"></script>
 </head>
@@ -189,6 +193,17 @@
           <a href="{{ url_for('measure') }}" class="btn primary">💓 Start Measuring</a>
           <a href="{{ url_for('theory') }}" class="btn secondary">ℹ️ How it Works</a>
         </div>
+
+        <!-- Google AdSense Display Ad -->
+        <ins class="adsbygoogle"
+             style="display:block; margin:20px auto; text-align:center;"
+             data-ad-client="ca-pub-7378987771428327"
+             data-ad-slot="7497336708"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
       </div>
     </div>
     <div class="hero-right">
