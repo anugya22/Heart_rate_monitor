@@ -4,6 +4,30 @@
   <meta charset="UTF-8" />
   <title>How It Works – PulseSense</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style> :root {
+      --primary: #ff4d6d;
+      --secondary: #f9f9f9;
+      --accent: #4ecca3;
+      --dark: #1e1e1e;
+      --light: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--secondary);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+</style>
+  
+
 </head>
 <body>
   <header class="navbar">
@@ -29,7 +53,7 @@
     <p>
       These changes are almost invisible to the human eye, but a webcam can capture them as <strong>fluctuations in pixel intensity</strong>—especially in the red channel of RGB (Red-Green-Blue) color data. More blood = more red; less blood = slightly less red.
     </p>
-    
+    <img src="{{ url_for('static', filename='images/finger_img.png') }}"  alt="finger img">
 
     <h2>From Light to Heartbeats</h2>
     <ul>
