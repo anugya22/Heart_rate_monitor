@@ -191,6 +191,13 @@
     };
   };
 </script>
+  <script>
+  if (!localStorage.getItem("privacyAccepted")) {
+    alert("Please accept the privacy policy to use this site.");
+    window.location.href = "/privacy";
+  }
+</script>
+
 
 </body>
 </html>
