@@ -169,7 +169,7 @@
 
   <script>
     async function measureBPM() {
-      const duration = 7;
+      const duration = 10;  // updated to 10 seconds
       const fps = 30;
       const interval = 1000 / fps;
       const total_frames = duration * fps;
@@ -184,7 +184,6 @@
       startBtn.disabled = true;
       startBtn.style.cursor = "not-allowed";
 
-      // Access webcam only after button click
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
@@ -192,7 +191,7 @@
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        statusText.innerText = "Wait for 7 seconds...";
+        statusText.innerText = "Wait for 10 seconds...";
         let frames = 0;
 
         const intervalId = setInterval(() => {
@@ -209,7 +208,7 @@
           const secondsPassed = frames / fps;
           if (secondsPassed > 3 && secondsPassed <= 5) {
             statusText.innerText = "A little more, hold steady...";
-          } else if (secondsPassed > 5 && secondsPassed < 7) {
+          } else if (secondsPassed > 5 && secondsPassed < 10) {
             statusText.innerText = "Adjust lighting if needed...";
           }
 
