@@ -4,6 +4,143 @@
   <meta charset="UTF-8" />
   <title>PulseSense</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    :root {
+      --primary: #ff4d6d;
+      --secondary: #f9f9f9;
+      --accent: #4ecca3;
+      --dark: #1e1e1e;
+      --light: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--secondary);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: var(--light);
+      border-bottom: 1px solid #ddd;
+    }
+
+    .logo {
+      font-size: 22px;
+      color: var(--primary);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    nav a {
+      margin-left: 16px;
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    #themeToggle {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      margin-left: 12px;
+    }
+
+    /* Hero section */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 80px;
+      background: linear-gradient(to right, #ffe0e6, #fefefe);
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .hero-text {
+      max-width: 50%;
+    }
+
+    .hero-text h2 {
+      font-size: 38px;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .hero-text p {
+      font-size: 17px;
+      margin-bottom: 24px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s ease;
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .btn.primary:hover {
+      background: #e63859;
+    }
+
+    .btn.secondary {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn.secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .hero-img {
+      width: 280px;
+      border-radius: 16px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 14px;
+      color: #555;
+      background-color: var(--light);
+      border-top: 1px solid #ddd;
+    }
+  </style>
 </head>
 <body>
   <header class="navbar">
@@ -19,18 +156,17 @@
   <section class="hero">
     <div class="hero-text">
       <h2>Check Your Heart Rate in Seconds</h2>
-      <p>Measure your pulse using just your camera. Get started instantly.</p>
+      <p>Use your camera, place your finger, and get an instant pulse check — all in a few taps.</p>
       <div class="buttons">
-        <a href="{{ url_for('measure') }}" class="btn primary">Start Measuring</a>
-        <a href="{{ url_for('theory') }}" class="btn secondary">How it Works</a>
+        <a href="{{ url_for('measure') }}" class="btn primary">💓 Start Measuring</a>
+        <a href="{{ url_for('theory') }}" class="btn secondary">ℹ️ How it Works</a>
       </div>
     </div>
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQww21CH0W3F3xLGjJTo3xRGwIiSoUWmBTYmw&s" class="hero-img" alt="Heart Image">
   </section>
- 
 
   <footer>
-    <p>&copy; 2025 PulseDetect. Built with 💖</p>
+    &copy; 2025 PulseSense. Built with 💖 for your heart.
   </footer>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
