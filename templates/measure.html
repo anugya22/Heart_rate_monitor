@@ -5,43 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Heart Rate Measurement</title>
   <style>
-    :root {
-      --primary: #0077b6;
-      --accent: #d90429;
-      --background: #f4faff;
-      --text: #1e1e1e;
-      --light-gray: #e0e0e0;
+   :root {
+      --primary: #b6d7a8;
+      --secondary: #f9f9f9;
+      --accent: #4ecca3;
+      --dark: #1e1e1e;
+      --light: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: var(--background);
-      color: var(--text);
+      background: linear-gradient(to right, #ffe0e6, #fefefe);
+      color: var(--dark);
+      line-height: 1.6;
     }
 
-    nav {
+    /* Container for top‐left and top‐right links */
+    .top-links {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
       background-color: var(--primary);
-      padding: 14px 0;
-      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
-    nav a {
-      color: white;
-      font-size: 18px;
+    /* Style for “← Home” and “📋 Instructions” links */
+    .back-link {
+      font-size: 16px;
+      color: #1e1e1e;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .back-link:hover {
+      color: #333;
+      text-decoration: underline;
     }
 
     h2 {
-      text-align: center;
-      margin: 40px 20px 10px;
-      font-size: 20px;
-      line-height: 1.6;
-    }
-    h3{
-      color: red;
       text-align: center;
       margin: 40px 20px 10px;
       font-size: 20px;
@@ -52,11 +60,10 @@
       max-width: 800px;
       margin: 0 auto;
       padding: 0 20px;
+      background-color:linear-gradient(to right, #ffe0e6, #fefefe); ;
     }
 
-    
-
-    /* New flex container for example image + video */
+    /* Flex container for example image + video */
     .flex-example-video {
       display: flex;
       justify-content: center;
@@ -80,7 +87,7 @@
     }
 
     /* Video styles */
-    video#video {
+    #video {
       width: 480px;
       height: 240px;
       border-radius: 12px;
@@ -113,7 +120,6 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
-
     #start-btn:active {
       background-color: #a6001e;
     }
@@ -126,27 +132,28 @@
 
     footer {
       background-color: var(--primary);
-      color: white;
+      color: #1e1e1e;
       text-align: center;
       padding: 16px 0;
       margin-top: 60px;
       font-size: 14px;
+      font-weight: 500;
     }
-
   </style>
 </head>
 <body>
 
-  <nav>
-    <a href="/">Home</a>
-  </nav>
+  <!-- Top‐bar containing “← Home” (left) and “📋 Instructions” (right) -->
+  <div class="top-links">
+    <a href="{{ url_for('index') }}" class="back-link">← Home</a>
+    <a href="{{ url_for('instructions') }}" class="back-link">📋 Instructions</a>
+  </div>
 
   <div class="container">
     <h2>
       Place the <strong>tip</strong> of your index finger inside the red box below<br />
       and click <strong>Start Measurement</strong>. Hold it there for exactly 7 seconds.
     </h2>
-    <h3>NOTE: The accuracy depends on how still and tightly you hold your finger, webcam quality, and light settings.</h3>
 
     <div class="flex-example-video">
       <div>
@@ -164,13 +171,10 @@
     <p id="bpmResult"></p>
   </div>
 
-  <footer>
-    &copy; 2025 HeartMonitor.
-  </footer>
+ 
 
   <script>
     let videoStream;
-
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
       const video = document.getElementById("video");
       video.srcObject = stream;
@@ -230,27 +234,26 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ intensity_values, duration })
           })
-            .then(res => res.json())
-            .then(data => {
-              if (data.bpm) {
-                statusText.innerText = `Your heart rate is approximately ${data.bpm} BPM.`;
-              } else if (data.redirect) {
-                window.location.href = data.redirect;
-              } else {
-                statusText.innerText = "Sorry, could not measure heart rate.";
-              }
-              startBtn.disabled = false;
-              startBtn.style.cursor = "pointer";
-            })
-            .catch(() => {
-              statusText.innerText = "Error processing measurement.";
-              startBtn.disabled = false;
-              startBtn.style.cursor = "pointer";
-            });
+          .then(res => res.json())
+          .then(data => {
+            if (data.bpm) {
+              statusText.innerText = `Your heart rate is approximately ${data.bpm} BPM.`;
+            } else if (data.redirect) {
+              window.location.href = data.redirect;
+            } else {
+              statusText.innerText = "Sorry, could not measure heart rate.";
+            }
+            startBtn.disabled = false;
+            startBtn.style.cursor = "pointer";
+          })
+          .catch(() => {
+            statusText.innerText = "Error processing measurement.";
+            startBtn.disabled = false;
+            startBtn.style.cursor = "pointer";
+          });
         }
       }, interval);
     }
   </script>
-
 </body>
 </html>
