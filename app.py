@@ -21,6 +21,11 @@ def theory():
 @app.route("/instructions")
 def instructions():
     return render_template("instructions.html")
+    
+    @app.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
+
 
 @app.route("/start", methods=["POST"])
 def start_detection():
