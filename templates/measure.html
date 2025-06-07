@@ -146,7 +146,6 @@
   </style>
 </head>
 <body>
-
   <div class="top-links">
     <a href="{{ url_for('index') }}" class="back-link">← Home</a>
     <a href="{{ url_for('instructions') }}" class="back-link">📋 Instructions</a>
@@ -161,7 +160,8 @@
         ⚠️ If the result says <strong>“Unreliable”</strong> or <strong>“Error Processing”</strong>, it may mean:
         <ul style="margin-top: 6px; margin-left: 18px;">
           <li>You didn’t place your finger properly.</li>
-          <li>It was too shaky or lighting was poor.</li>
+          <li>It was too shaky, or the lighting was poor.</li>
+          <li><b>Make sure that any other body part except your finger is not focused on the box.</b></li>
         </ul>
       </p>
     </div>
@@ -208,8 +208,8 @@
       const duration = 10;
       const fps = 30;
       const interval = 1000 / fps;
-      const total_frames = duration * fps;
-      const intensity_values = [];
+      const totalFrames = duration * fps;
+      const intensityValues = [];
 
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
@@ -240,10 +240,10 @@
         for (let i = 0; i < data.length; i += 4) {
           redSum += data[i];
         }
-        intensity_values.push(redSum / (data.length / 4));
+        intensityValues.push(redSum / (data.length / 4));
         frames++;
 
-        if (frames >= total_frames) {
+        if (frames >= totalFrames) {
           clearInterval(intervalId);
           stream.getTracks().forEach(track => track.stop());
           statusText.innerText = "Processing, please wait...";
@@ -251,7 +251,7 @@
           fetch("/start", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ intensity_values, duration })
+            body: JSON.stringify({ intensity_values: intensityValues, duration })
           })
           .then(res => res.json())
           .then(data => {
