@@ -63,6 +63,23 @@
       margin-top: 10px;
     }
 
+    .error-box {
+      background: #ffe0e0;
+      border-left: 8px solid #f44336;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 6px #ddd;
+      font-size: 16px;
+      color: #a10000;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .error-box ul {
+      margin-top: 10px;
+      padding-left: 20px;
+    }
+
     /* Bottom-left theory link */
     .theory-link {
       position: fixed;
@@ -113,21 +130,37 @@
 
   <div class="container">
     <h1>Heart Rate Measurement Result</h1>
-    <p id="bpm">Heart Rate: {{ bpm }} BPM</p>
 
-    <!-- Google AdSense Result Page Ad -->
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-7378987771428327"
-         data-ad-slot="1950939511"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    {% if bpm is defined and 40 <= bpm <= 200 %}
+      <p id="bpm">Heart Rate: {{ bpm }} BPM</p>
 
-    <canvas id="intensityChart"></canvas>
-    <p class="note">Graph showing smoothed red intensity over time (peaks marked).</p>
+      <!-- Google AdSense Result Page Ad -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-7378987771428327"
+           data-ad-slot="1950939511"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+
+      <canvas id="intensityChart"></canvas>
+      <p class="note">Graph showing smoothed red intensity over time (peaks marked).</p>
+    
+    {% else %}
+      <div class="error-box">
+        ⚠️ <strong>Unable to detect a reliable heart rate.</strong>
+        <br><br>
+        Please ensure:
+        <ul>
+          <li>Finger is placed properly on the camera lens</li>
+          <li>Lighting is sufficient (use flashlight if needed)</li>
+          <li>Hand is steady and camera is not shaking</li>
+        </ul>
+        Try again for an accurate reading.
+      </div>
+    {% endif %}
 
     <!-- New styled Measure Again button -->
     <a href="/measure" class="measure-btn">➕ Measure Again</a>
@@ -137,6 +170,7 @@
     Want to know how it works? 📖
   </a>
 
+  {% if bpm is defined and 40 <= bpm <= 200 %}
   <script>
     const smoothedData = JSON.parse('{{ smoothed | tojson | safe }}');
     const peaksData = JSON.parse('{{ peaks | tojson | safe }}');
@@ -178,6 +212,7 @@
       }
     });
   </script>
+  {% endif %}
 
   <!-- Footer -->
   <footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
@@ -188,7 +223,6 @@
   <script>
     const isPrivacyPage = window.location.pathname === "/privacy";
 
-    // Show popup if consent not accepted and not on privacy page
     if (!localStorage.getItem("privacyAccepted") && !isPrivacyPage) {
       const popup = document.createElement("div");
       popup.id = "consent-popup";
@@ -205,6 +239,5 @@
       };
     }
   </script>
-
 </body>
 </html>
