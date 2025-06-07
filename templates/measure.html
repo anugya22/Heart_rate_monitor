@@ -161,6 +161,23 @@
 
     <button id="start-btn" onclick="measureBPM()">Start Measurement</button>
     <p id="bpmResult"></p>
+
+    <!-- ✅ New Button Added Below -->
+    <button id="checkPulseBtn" style="
+      display: block;
+      margin: 20px auto;
+      padding: 10px 24px;
+      font-size: 15px;
+      background-color: #ff9999;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    " onclick="alert('Feature coming soon!')">
+      🔍 Check Pulse Trend
+    </button>
+
   </div>
 
   <footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
@@ -170,7 +187,7 @@
 
   <script>
     async function measureBPM() {
-      const duration = 10;  // updated to 10 seconds
+      const duration = 10;
       const fps = 30;
       const interval = 1000 / fps;
       const total_frames = duration * fps;
