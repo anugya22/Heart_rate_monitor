@@ -30,16 +30,6 @@ def privacy():
 def ads():
     return send_from_directory(directory='static', path='ads.txt', mimetype='text/plain')
 
-
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=4):
-    nyquist = 0.5 * fs
-    low = lowcut / nyquist
-    high = highcut / nyquist
-    b, a = butter(order, [low, high], btype='band')
-    y = filtfilt(b, a, data)
-    return y
-
-
 @app.route("/start", methods=["POST"])
 def start_detection():
     data = request.get_json()
@@ -57,14 +47,16 @@ def start_detection():
 
     fps = len(intensity_values) / sampling_time
 
-    # Apply Butterworth bandpass filter
-    try:
-        filtered = butter_bandpass_filter(np.array(intensity_values), 0.75, 3.5, fs=fps, order=4)
-    except Exception as e:
-        session["bpm"] = "Unreliable"
-        session["smoothed"] = []
-        session["peaks"] = []
-        return jsonify({"redirect": url_for("result")})
+    # Butterworth bandpass filter
+    def butter_bandpass_filter(data, lowcut=0.8, highcut=3.0, fs=30.0, order=3):
+        nyq = 0.5 * fs
+        low = lowcut / nyq
+        high = highcut / nyq
+        b, a = butter(order, [low, high], btype='band')
+        y = filtfilt(b, a, data)
+        return y
+
+    filtered = butter_bandpass_filter(np.array(intensity_values), fs=fps)
 
     try:
         peaks, _ = find_peaks(filtered, distance=fps / 2.5, height=np.mean(filtered) * 0.9)
@@ -83,14 +75,12 @@ def start_detection():
 
     return jsonify({"redirect": url_for("result")})
 
-
 @app.route("/result")
 def result():
     bpm = session.get("bpm", "Unreliable")
     smoothed = session.get("smoothed", [])
     peaks = session.get("peaks", [])
     return render_template("result.html", bpm=bpm, smoothed=smoothed, peaks=peaks)
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
