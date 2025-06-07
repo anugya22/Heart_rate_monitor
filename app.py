@@ -40,7 +40,7 @@ def start_detection():
         return jsonify({"error": "No or insufficient intensity data received"}), 400
 
     if max(intensity_values) - min(intensity_values) < 15:
-        session["bpm"] = "Unreliable"
+        session["bpm"] = None
         session["smoothed"] = []
         session["peaks"] = []
         return jsonify({"redirect": url_for("result")})
@@ -64,10 +64,10 @@ def start_detection():
         peaks = []
 
     if len(peaks) < 2:
-        bpm = "Unreliable"
+        bpm = None
     else:
         bpm_calc = (len(peaks) / sampling_time) * 60
-        bpm = round(bpm_calc, 2) if 40 <= bpm_calc <= 200 else "Unreliable"
+        bpm = round(bpm_calc, 2) if 40 <= bpm_calc <= 200 else None
 
     session["bpm"] = bpm
     session["smoothed"] = filtered.tolist()
@@ -77,7 +77,7 @@ def start_detection():
 
 @app.route("/result")
 def result():
-    bpm = session.get("bpm", "Unreliable")
+    bpm = session.get("bpm")
     smoothed = session.get("smoothed", [])
     peaks = session.get("peaks", [])
     return render_template("result.html", bpm=bpm, smoothed=smoothed, peaks=peaks)
