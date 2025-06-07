@@ -1,12 +1,11 @@
 from flask import Flask, render_template, jsonify, request, session, url_for, send_from_directory
 import numpy as np
-from scipy.signal import find_peaks
+from scipy.signal import butter, filtfilt, find_peaks
 import os
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
-# Routes for each page
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -27,12 +26,20 @@ def instructions():
 def privacy():
     return render_template("privacy.html")
 
-# Route for ads.txt
-@app.route('/ads.txt')
+@app.route("/ads.txt")
 def ads():
     return send_from_directory(directory='static', path='ads.txt', mimetype='text/plain')
 
-# BPM detection route
+
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=4):
+    nyquist = 0.5 * fs
+    low = lowcut / nyquist
+    high = highcut / nyquist
+    b, a = butter(order, [low, high], btype='band')
+    y = filtfilt(b, a, data)
+    return y
+
+
 @app.route("/start", methods=["POST"])
 def start_detection():
     data = request.get_json()
@@ -48,11 +55,19 @@ def start_detection():
         session["peaks"] = []
         return jsonify({"redirect": url_for("result")})
 
-    smoothed = np.convolve(intensity_values, np.ones(5) / 5, mode='valid')
     fps = len(intensity_values) / sampling_time
 
+    # Apply Butterworth bandpass filter
     try:
-        peaks, _ = find_peaks(smoothed, distance=fps / 3, height=np.mean(smoothed) * 0.9)
+        filtered = butter_bandpass_filter(np.array(intensity_values), 0.75, 3.5, fs=fps, order=4)
+    except Exception as e:
+        session["bpm"] = "Unreliable"
+        session["smoothed"] = []
+        session["peaks"] = []
+        return jsonify({"redirect": url_for("result")})
+
+    try:
+        peaks, _ = find_peaks(filtered, distance=fps / 2.5, height=np.mean(filtered) * 0.9)
     except Exception:
         peaks = []
 
@@ -63,10 +78,11 @@ def start_detection():
         bpm = round(bpm_calc, 2) if 40 <= bpm_calc <= 200 else "Unreliable"
 
     session["bpm"] = bpm
-    session["smoothed"] = smoothed.tolist()
+    session["smoothed"] = filtered.tolist()
     session["peaks"] = peaks.tolist()
 
     return jsonify({"redirect": url_for("result")})
+
 
 @app.route("/result")
 def result():
@@ -74,6 +90,7 @@ def result():
     smoothed = session.get("smoothed", [])
     peaks = session.get("peaks", [])
     return render_template("result.html", bpm=bpm, smoothed=smoothed, peaks=peaks)
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
