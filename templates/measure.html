@@ -49,32 +49,37 @@
       text-decoration: underline;
     }
 
-    h2 {
-      text-align: center;
-      margin: 40px 20px 10px;
-      font-size: 20px;
-      line-height: 1.6;
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 30px 20px;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 20px;
+    .instructions-box {
+      background-color: #fff2f3;
+      padding: 18px 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+
+    .instructions-box strong {
+      color: #a6001e;
     }
 
     .flex-example-video {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 30px;
       gap: 24px;
+      margin-bottom: 20px;
     }
 
     .flex-example-video img {
       width: 120px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      display: block;
     }
 
     .flex-example-video h3 {
@@ -90,7 +95,6 @@
       border-radius: 12px;
       transform: scaleX(-1);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      display: block;
       background: #000;
     }
 
@@ -120,17 +124,24 @@
     }
 
     #start-btn:active, #measure-btn:active {
-      background-color: #a6001e;
+      background-color: #3bb092;
     }
 
     #bpmResult {
       text-align: center;
       font-size: 18px;
-      margin-top: 10px;
+      margin-top: 16px;
+      color: #444;
+      font-weight: 500;
     }
 
     footer {
-      margin-top: auto;
+      margin-top: 40px;
+      background:#cfc2c6;
+      padding: 20px 10px;
+      text-align:center;
+      font-size:14px;
+      color:#555;
     }
   </style>
 </head>
@@ -142,11 +153,18 @@
   </div>
 
   <div class="container">
-    <h2>
-      First, click <strong>Start Camera</strong> and allow access.<br />
-      Then place the <strong>tip</strong> of your index finger inside the red box below,<br />
-      and click <strong>Start Measurement</strong>. Hold steady for exactly 10 seconds.
-    </h2>
+    <div class="instructions-box">
+      <p>
+        👉 First, click <strong>Start Camera</strong> and allow access.<br>
+        👉 Then place the <strong>tip</strong> of your index finger inside the red box below.<br>
+        👉 Click <strong>Start Measurement</strong> and hold your finger <strong>still</strong> for 10 seconds.<br><br>
+        ⚠️ If the result says <strong>“Unreliable”</strong> or <strong>“Error Processing”</strong>, it may mean:
+        <ul style="margin-top: 6px; margin-left: 18px;">
+          <li>You didn’t place your finger properly.</li>
+          <li>It was too shaky or lighting was poor.</li>
+        </ul>
+      </p>
+    </div>
 
     <div class="flex-example-video">
       <div>
@@ -162,10 +180,11 @@
 
     <button id="start-btn" onclick="startCamera()">Start Camera</button>
     <button id="measure-btn" style="display:none;" onclick="measureBPM()">Start Measurement</button>
+
     <p id="bpmResult"></p>
   </div>
 
-  <footer style="background:#cfc2c6; padding: 20px 10px; text-align:center; font-size:14px; color:#555; margin-top:40px;">
+  <footer>
     Designed by <strong>Anugya</strong><br>
     © 2025 | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
   </footer>
@@ -204,10 +223,16 @@
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      statusText.innerText = "Measuring for 10 seconds...";
+      let secondsPassed = 0;
+      statusText.innerText = "Measuring... Hold steady, adjust lighting if needed.";
 
       let frames = 0;
       const intervalId = setInterval(() => {
+        if (frames % fps === 0 && frames !== 0) {
+          secondsPassed++;
+          statusText.innerText = `Measuring... ${10 - secondsPassed}s left. Stay steady.`;
+        }
+
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageData = ctx.getImageData(220, 100, 200, 200);
         const data = imageData.data;
@@ -221,7 +246,7 @@
         if (frames >= total_frames) {
           clearInterval(intervalId);
           stream.getTracks().forEach(track => track.stop());
-          statusText.innerText = "Processing...";
+          statusText.innerText = "Processing, please wait...";
 
           fetch("/start", {
             method: "POST",
@@ -230,18 +255,16 @@
           })
           .then(res => res.json())
           .then(data => {
-            if (data.bpm) {
-              statusText.innerText = `Your heart rate is approximately ${data.bpm} BPM.`;
-            } else if (data.redirect) {
+            if (data.redirect) {
               window.location.href = data.redirect;
             } else {
-              statusText.innerText = "Sorry, could not measure heart rate.";
+              statusText.innerText = "Sorry, could not process the measurement.";
+              measureBtn.disabled = false;
+              measureBtn.style.cursor = "pointer";
             }
-            measureBtn.disabled = false;
-            measureBtn.style.cursor = "pointer";
           })
           .catch(() => {
-            statusText.innerText = "Error processing measurement.";
+            statusText.innerText = "Error processing measurement. Try again.";
             measureBtn.disabled = false;
             measureBtn.style.cursor = "pointer";
           });
@@ -249,6 +272,5 @@
       }, interval);
     }
   </script>
-
 </body>
 </html>
