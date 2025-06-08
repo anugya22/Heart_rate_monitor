@@ -34,20 +34,26 @@ def ads():
 def start_detection():
     data = request.get_json()
     intensity_values = data.get("intensity_values", [])
-    sampling_time = data.get("duration", 10)
+    sampling_time = data.get("duration", 10)  # seconds
 
     if not intensity_values or len(intensity_values) < 10:
         return jsonify({"error": "No or insufficient intensity data received"}), 400
 
-    if max(intensity_values) - min(intensity_values) < 15:
+    intensity_array = np.array(intensity_values)
+
+    # Quick signal quality check: variance too low means no finger or flat signal
+    signal_variance = np.var(intensity_array)
+    if signal_variance < 10:  # Threshold can be adjusted based on testing
+        print(f"[DEBUG] Low signal variance: {signal_variance}. Rejecting measurement.")
         session["bpm"] = None
         session["smoothed"] = []
         session["peaks"] = []
         return jsonify({"redirect": url_for("result")})
 
     fps = len(intensity_values) / sampling_time
+    print(f"[DEBUG] fps calculated: {fps:.2f}")
 
-    # Butterworth bandpass filter
+    # Butterworth bandpass filter (0.8 Hz to 3 Hz - approx 48 to 180 bpm)
     def butter_bandpass_filter(data, lowcut=0.8, highcut=3.0, fs=30.0, order=3):
         nyq = 0.5 * fs
         low = lowcut / nyq
@@ -56,18 +62,27 @@ def start_detection():
         y = filtfilt(b, a, data)
         return y
 
-    filtered = butter_bandpass_filter(np.array(intensity_values), fs=fps)
+    filtered = butter_bandpass_filter(intensity_array, fs=fps)
+
+    # Use standard deviation for peak height threshold to be adaptive
+    peak_height_threshold = np.mean(filtered) + 0.5 * np.std(filtered)
+    print(f"[DEBUG] Peak height threshold: {peak_height_threshold:.3f}")
 
     try:
-        peaks, _ = find_peaks(filtered, distance=fps / 2.5, height=np.mean(filtered) * 0.9)
-    except Exception:
+        peaks, properties = find_peaks(filtered, distance=fps / 2.5, height=peak_height_threshold)
+    except Exception as e:
+        print(f"[DEBUG] Peak detection exception: {e}")
         peaks = []
+
+    print(f"[DEBUG] Number of peaks detected: {len(peaks)}")
 
     if len(peaks) < 2:
         bpm = None
     else:
         bpm_calc = (len(peaks) / sampling_time) * 60
         bpm = round(bpm_calc, 2) if 40 <= bpm_calc <= 200 else None
+
+    print(f"[DEBUG] Calculated BPM: {bpm}")
 
     session["bpm"] = bpm
     session["smoothed"] = filtered.tolist()
