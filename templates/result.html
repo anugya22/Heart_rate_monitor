@@ -131,7 +131,7 @@
   <div class="container">
     <h1>Heart Rate Measurement Result</h1>
 
-    {% if bpm is defined and 40 <= bpm <= 200 %}
+    {% if bpm is defined and bpm is not none and 40 <= bpm <= 200 %}
       <p id="bpm">Heart Rate: {{ bpm }} BPM</p>
 
       <!-- Google AdSense Result Page Ad -->
@@ -149,7 +149,7 @@
       <p class="note">Graph showing smoothed red intensity over time (peaks marked).</p>
     
     {% else %}
-      <div class="error-box">
+      <div class="error-box" role="alert" aria-live="polite">
         ⚠️ <strong>Unable to detect a reliable heart rate.</strong>
         <br><br>
         Please ensure:
@@ -163,14 +163,14 @@
     {% endif %}
 
     <!-- New styled Measure Again button -->
-    <a href="/measure" class="measure-btn">➕ Measure Again</a>
+    <a href="/measure" class="measure-btn" aria-label="Measure heart rate again">➕ Measure Again</a>
   </div>
 
   <a href="/theory" class="theory-link" title="Learn how PulseSense works!">
     Want to know how it works? 📖
   </a>
 
-  {% if bpm is defined and 40 <= bpm <= 200 %}
+  {% if bpm is defined and bpm is not none and 40 <= bpm <= 200 %}
   <script>
     const smoothedData = JSON.parse('{{ smoothed | tojson | safe }}');
     const peaksData = JSON.parse('{{ peaks | tojson | safe }}');
