@@ -8,23 +8,18 @@
   <style>
     :root {
       --primary: #b6d7a8;
-      --secondary: #f9f9f9;
       --accent: red;
-      --dark: #1e1e1e;
-      --light: #ffffff;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      --pink: #ffc0cb;
+      --button-hover: #ffafc0;
+      --text-dark: #1e1e1e;
     }
 
     body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to right, #ffe0e6, #fefefe);
-      color: var(--dark);
-      line-height: 1.6;
+      color: var(--text-dark);
+      margin: 0;
+      padding-bottom: 40px;
     }
 
     .top-links {
@@ -33,60 +28,64 @@
       align-items: center;
       padding: 14px 20px;
       background-color: var(--primary);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
     .back-link {
-      font-size: 16px;
-      color: #1e1e1e;
+      font-weight: bold;
       text-decoration: none;
-      font-weight: 600;
-      transition: color 0.2s ease;
+      color: var(--text-dark);
     }
 
-    .back-link:hover {
-      color: #333;
-      text-decoration: underline;
+    h2 {
+      text-align: center;
+      margin: 40px 20px 10px;
     }
 
     .container {
-      max-width: 860px;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 30px 20px;
+      padding: 0 20px;
     }
 
     .instructions-box {
-      background-color: #fff2f3;
-      padding: 18px 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      background-color: #fff4f8;
+      border-left: 6px solid var(--pink);
+      padding: 16px 20px;
+      margin: 20px auto 40px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       font-size: 16px;
-      margin-bottom: 30px;
+      line-height: 1.5;
+      color: #4a002b;
     }
 
-    .instructions-box strong {
-      color: #a6001e;
+    .instructions-box h3 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #c71585;
+    }
+
+    .instructions-box ol {
+      padding-left: 20px;
+      margin: 10px 0 0;
+    }
+
+    .instructions-box ol li {
+      margin-bottom: 12px;
     }
 
     .flex-example-video {
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-top: 30px;
       gap: 24px;
-      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
     .flex-example-video img {
       width: 120px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .flex-example-video h3 {
-      font-size: 14px;
-      margin-bottom: 8px;
-      text-align: center;
-      font-weight: 500;
     }
 
     #video {
@@ -94,7 +93,6 @@
       height: 240px;
       border-radius: 12px;
       transform: scaleX(-1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       background: #000;
     }
 
@@ -110,60 +108,98 @@
       border-radius: 8px;
     }
 
-    #start-btn, #measure-btn {
-      display: block;
-      margin: 20px auto 10px;
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    button {
       padding: 12px 28px;
       font-size: 16px;
-      background-color: #4ecca3;
-      color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: all 0.2s ease;
     }
 
-    #start-btn:active, #measure-btn:active {
-      background-color: #3bb092;
+    #start-camera-btn {
+      background-color: #4ecca3;
+      color: white;
+    }
+
+    #start-camera-btn:hover {
+      background-color: #3eb08e;
+    }
+
+    #start-btn {
+      background-color: var(--pink);
+      color: #000;
+    }
+
+    #start-btn:hover {
+      background-color: var(--button-hover);
+    }
+
+    #start-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     #bpmResult {
       text-align: center;
       font-size: 18px;
-      margin-top: 16px;
-      color: #444;
-      font-weight: 500;
+      margin-top: 20px;
+      min-height: 28px;
+      color: #c71585;
+      font-weight: 600;
+    }
+
+    .dots::after {
+      content: '.';
+      animation: dots 1s steps(5, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60% { content: '...'; }
+      80%, 100% { content: ''; }
     }
 
     footer {
-      margin-top: 40px;
-      background:#cfc2c6;
+      background: #cfc2c6;
       padding: 20px 10px;
-      text-align:center;
-      font-size:14px;
-      color:#555;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
+
   <div class="top-links">
     <a href="{{ url_for('index') }}" class="back-link">← Home</a>
     <a href="{{ url_for('instructions') }}" class="back-link">📋 Instructions</a>
   </div>
 
   <div class="container">
+
+    <h2>Welcome to PulseSense</h2>
+
     <div class="instructions-box">
-      <p>
-        1) First, click <strong>Start Camera</strong> and allow access.<br>
-        2) Then place the <strong>tip</strong> of your index finger inside the red box below.<br>
-        3) Click <strong>Start Measurement</strong> and hold your finger <strong>still</strong> for 10 seconds.<br><br>
-        ⚠️ If the result says <strong>“Unreliable”</strong> or <strong>“Error Processing”</strong>, it may mean:
-        <ul style="margin-top: 6px; margin-left: 18px;">
-          <li>You didn’t place your finger properly.</li>
-          <li>It was too shaky, or the lighting was poor.</li>
-          <li><b>Make sure that any other body part except your finger is not focused on the box.</b></li>
-        </ul>
-      </p>
+      <h3>📋 How to Measure Your Heart Rate</h3>
+      <ol>
+        <li>Click the <strong>Start Camera</strong> button to activate your webcam.</li>
+        <li>Place the <strong>tip</strong> of your index finger inside the red box on the video feed.</li>
+        <li>Make sure your finger fully covers the box and stay steady.</li>
+        <li>When ready, click the <strong>Start Measurement</strong> button.</li>
+        <li>Hold your finger still for exactly <strong>10 seconds</strong> while measurement takes place.</li>
+        <li>Wait for the result to be processed and displayed below.</li>
+      </ol>
     </div>
 
     <div class="flex-example-video">
@@ -178,29 +214,34 @@
       </div>
     </div>
 
-    <button id="start-btn" onclick="startCamera()">Start Camera</button>
-    <button id="measure-btn" style="display:none;" onclick="measureBPM()">Start Measurement</button>
+    <div class="button-group">
+      <button id="start-camera-btn" onclick="startCamera()">Start Camera</button>
+      <button id="start-btn" onclick="measureBPM()" disabled>Start Measurement</button>
+    </div>
 
     <p id="bpmResult"></p>
   </div>
 
   <footer>
     Designed by <strong>Anugya</strong><br>
-    © 2025 | <a href="/privacy" style="color:#0077cc; text-decoration:none;">Privacy Policy</a>
+    © 2025 | <a href="/privacy" style="color:#0077cc;">Privacy Policy</a>
   </footer>
 
   <script>
     let stream;
     let video = document.getElementById("video");
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext("2d");
 
     async function startCamera() {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
-        document.getElementById("measure-btn").style.display = "block";
-        document.getElementById("start-btn").style.display = "none";
-      } catch (error) {
-        alert("Unable to access camera.");
+        document.getElementById("start-btn").disabled = false;
+        document.getElementById("start-btn").style.cursor = "pointer";
+        document.getElementById("bpmResult").innerText = "Camera started. Now place your finger and click Start Measurement.";
+      } catch (e) {
+        document.getElementById("bpmResult").innerText = "Camera access denied or unavailable.";
       }
     }
 
@@ -209,68 +250,72 @@
       const fps = 30;
       const interval = 1000 / fps;
       const totalFrames = duration * fps;
-      const intensityValues = [];
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      const intensity_values = [];
 
       const statusText = document.getElementById("bpmResult");
-      const measureBtn = document.getElementById("measure-btn");
-      measureBtn.disabled = true;
-      measureBtn.style.cursor = "not-allowed";
+      const startBtn = document.getElementById("start-btn");
+      const startCameraBtn = document.getElementById("start-camera-btn");
+      startBtn.disabled = true;
+      startCameraBtn.disabled = true;
+      startBtn.style.cursor = "not-allowed";
+      startCameraBtn.style.cursor = "not-allowed";
 
-      await new Promise(resolve => video.onloadedmetadata = resolve);
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      let secondsPassed = 0;
-      statusText.innerText = "Measuring... Hold steady, adjust lighting if needed.";
-
       let frames = 0;
-      const intervalId = setInterval(() => {
-        if (frames % fps === 0 && frames !== 0) {
-          secondsPassed++;
-          statusText.innerText = `Measuring... ${10 - secondsPassed}s left. Stay steady.`;
-        }
+      statusText.innerText = "Hold your finger steady for 10 seconds...";
 
+      const intervalId = setInterval(() => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageData = ctx.getImageData(220, 100, 200, 200);
-        const data = imageData.data;
         let redSum = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          redSum += data[i];
+        for (let i = 0; i < imageData.data.length; i += 4) {
+          redSum += imageData.data[i];
         }
-        intensityValues.push(redSum / (data.length / 4));
+        intensity_values.push(redSum / (imageData.data.length / 4));
         frames++;
+
+        const secondsPassed = frames / fps;
+        if (secondsPassed > 3 && secondsPassed <= 5) {
+          statusText.innerText = "A little more, hold steady...";
+        } else if (secondsPassed > 5 && secondsPassed < 10) {
+          statusText.innerText = "Adjust lighting if needed...";
+        }
 
         if (frames >= totalFrames) {
           clearInterval(intervalId);
           stream.getTracks().forEach(track => track.stop());
-          statusText.innerText = "Processing, please wait...";
+          statusText.innerHTML = "Processing<span class='dots'></span>";
 
           fetch("/start", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ intensity_values: intensityValues, duration })
+            body: JSON.stringify({ intensity_values, duration })
           })
           .then(res => res.json())
           .then(data => {
             if (data.redirect) {
               window.location.href = data.redirect;
             } else {
-              statusText.innerText = "Sorry, could not process the measurement.";
-              measureBtn.disabled = false;
-              measureBtn.style.cursor = "pointer";
+              statusText.innerText = "Sorry, could not measure heart rate.";
+              startBtn.disabled = false;
+              startCameraBtn.disabled = false;
+              startBtn.style.cursor = "pointer";
+              startCameraBtn.style.cursor = "pointer";
             }
           })
           .catch(() => {
-            statusText.innerText = "Error processing measurement. Try again.";
-            measureBtn.disabled = false;
-            measureBtn.style.cursor = "pointer";
+            statusText.innerText = "Error processing measurement.";
+            startBtn.disabled = false;
+            startCameraBtn.disabled = false;
+            startBtn.style.cursor = "pointer";
+            startCameraBtn.style.cursor = "pointer";
           });
         }
       }, interval);
     }
   </script>
+
 </body>
 </html>
