@@ -34,26 +34,28 @@ def ads():
 def start_detection():
     data = request.get_json()
     intensity_values = data.get("intensity_values", [])
-    sampling_time = data.get("duration", 10)  # seconds
+    sampling_time = data.get("duration", 10)  # in seconds
 
     if not intensity_values or len(intensity_values) < 10:
+        print("[DEBUG] No or insufficient data received.")
         return jsonify({"error": "No or insufficient intensity data received"}), 400
 
     intensity_array = np.array(intensity_values)
 
-    # Quick signal quality check: variance too low means no finger or flat signal
+    # Check signal variance
     signal_variance = np.var(intensity_array)
-    if signal_variance < 10:  # Threshold can be adjusted based on testing
-        print(f"[DEBUG] Low signal variance: {signal_variance}. Rejecting measurement.")
+    print(f"[DEBUG] Signal variance: {signal_variance:.2f}")
+    if signal_variance < 5:  # lowered threshold from 10 to 5
+        print("[DEBUG] Low signal variance — likely no finger or bad lighting.")
         session["bpm"] = None
         session["smoothed"] = []
         session["peaks"] = []
         return jsonify({"redirect": url_for("result")})
 
     fps = len(intensity_values) / sampling_time
-    print(f"[DEBUG] fps calculated: {fps:.2f}")
+    print(f"[DEBUG] FPS calculated: {fps:.2f}")
 
-    # Butterworth bandpass filter (0.8 Hz to 3 Hz - approx 48 to 180 bpm)
+    # Bandpass filter: 0.8 Hz to 3.0 Hz (48 to 180 BPM)
     def butter_bandpass_filter(data, lowcut=0.8, highcut=3.0, fs=30.0, order=3):
         nyq = 0.5 * fs
         low = lowcut / nyq
@@ -64,14 +66,14 @@ def start_detection():
 
     filtered = butter_bandpass_filter(intensity_array, fs=fps)
 
-    # Use standard deviation for peak height threshold to be adaptive
-    peak_height_threshold = np.mean(filtered) + 0.5 * np.std(filtered)
+    # Adaptive threshold based on filtered signal std dev
+    peak_height_threshold = np.mean(filtered) + 0.2 * np.std(filtered)  # was 0.5
     print(f"[DEBUG] Peak height threshold: {peak_height_threshold:.3f}")
 
     try:
         peaks, properties = find_peaks(filtered, distance=fps / 2.5, height=peak_height_threshold)
     except Exception as e:
-        print(f"[DEBUG] Peak detection exception: {e}")
+        print(f"[DEBUG] Peak detection error: {e}")
         peaks = []
 
     print(f"[DEBUG] Number of peaks detected: {len(peaks)}")
